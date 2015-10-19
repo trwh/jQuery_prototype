@@ -1,5 +1,16 @@
 $(document).ready(function() {
 
+    var auto = setTimeout(function(){ submitform();}, 5000);
+
+    function submitform(){
+      $(".gitprofile").submit();
+    }
+
+    $('input.username').keyup(function autoRefresh(){
+       clearTimeout(auto);
+       auto = setTimeout(function(){ submitform(); }, 5000);
+    });
+
   $('.gitprofile').on('submit', function(e) {
 
     e.preventDefault();
@@ -8,13 +19,17 @@ $(document).ready(function() {
 
     var template = $('template').html();
 
+    var fail_func = function() {
+      $('.container').prepend("User not found")
+    };
+
+    var always_func = function() {
+      $('input.username').val('');
+    };
+
     $.get(url, function(info) {
       console.log(info);
       $('.container').prepend(Mustache.render(template, info));
-    }).fail(function() {
-      $('.container').prepend("User not found")
-    }).always(function() {
-      $('input.username').val('');
-      });
+    }).fail(fail_func).always(always_func);
   });
 });
